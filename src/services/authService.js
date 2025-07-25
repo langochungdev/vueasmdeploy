@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const API = "http://localhost:8080/api/nguoidung";
+// Lấy API từ biến môi trường, nếu không có thì mặc định là localhost
+const API = process.env.VUE_APP_API_URL
+  ? `${process.env.VUE_APP_API_URL}/api/nguoidung`
+  : "http://localhost:8080/api/nguoidung";
 
 export const dangKyNguoiDung = async (nguoiDung) => {
   const res = await axios.post(API, nguoiDung);
