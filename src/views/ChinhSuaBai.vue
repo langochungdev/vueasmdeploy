@@ -83,22 +83,34 @@ const form = ref({
 
 const imageUrl = ref('')
 const defaultImg = '/default.jpg'
+let revokeUrl = null // dùng để giải phóng bộ nhớ URL.createObjectURL
 
-// Preview ảnh mỗi khi nhập link
+// Khi chọn file: show ảnh tạm ngay, upload xong đổi sang link cloud/server (tự động)
+const handleFile = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    // Hủy link tạm cũ nếu có
+    if (revokeUrl) {
+        URL.revokeObjectURL(revokeUrl)
+        revokeUrl = null
+    }
+    // Hiện ảnh tạm ngay
+    const tempUrl = URL.createObjectURL(file)
+    imageUrl.value = tempUrl
+    revokeUrl = tempUrl
+    // Bắt đầu upload (người dùng thấy ảnh trước, không phải đợi)
+    const url = await uploadAnh(file)
+    form.value.hinhAnh = url // Lưu link cloudinary vào form
+    imageUrl.value = getImageUrl(url) // Đổi sang ảnh thật sau khi upload
+    // Giải phóng ảnh tạm (không cần giữ trong bộ nhớ nữa)
+    URL.revokeObjectURL(tempUrl)
+    revokeUrl = null
+}
+
 const handleImage = () => {
     imageUrl.value = getImageUrl(form.value.hinhAnh)
 }
 
-// Hàm upload file ảnh
-const handleFile = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    const url = await uploadAnh(file)
-    form.value.hinhAnh = url
-    imageUrl.value = url
-}
-
-// Xử lý link ảnh: nếu là link http thì giữ nguyên, nếu là chuỗi rỗng/null thì lấy ảnh mặc định, nếu là tên file trả về đường dẫn backend
 const getImageUrl = (img) => {
     if (!img || img === 'null') return defaultImg
     if (img.startsWith('http')) return img
@@ -155,3 +167,4 @@ onMounted(() => {
     taiBaiViet()
 })
 </script>
+

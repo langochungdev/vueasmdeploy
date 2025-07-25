@@ -56,7 +56,7 @@
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
-import { uploadAnh } from "@/services/postService" // thêm dòng này
+import { uploadAnh } from "@/services/postService"
 
 const { state, capNhat } = useAuthStore()
 const user = computed(() => state.nguoiDung)
@@ -73,12 +73,16 @@ const form = reactive({
 
 const dangSua = ref(false)
 const anhMacDinh = '/default.jpg'
+const anhTamThoi = ref('') // Hiển thị ảnh tạm khi chọn file
 
 const anhHienThi = computed(() => {
+  if (anhTamThoi.value) {
+    return anhTamThoi.value // Ưu tiên ảnh vừa chọn
+  }
   if (form.anhDaiDien && form.anhDaiDien !== 'null' && form.anhDaiDien !== '') {
     return form.anhDaiDien.startsWith('http')
       ? form.anhDaiDien
-      : 'http://localhost:8080/' + form.anhDaiDien
+      : `${location.origin}/${form.anhDaiDien}`
   }
   return anhMacDinh
 })
@@ -88,11 +92,13 @@ const batDauSua = () => dangSua.value = true
 const huy = () => {
   fillForm()
   dangSua.value = false
+  anhTamThoi.value = ''
 }
 
 const luu = async () => {
   await capNhat({ ...form })
   dangSua.value = false
+  anhTamThoi.value = ''
   window.location.reload()
 }
 
@@ -104,19 +110,20 @@ const fillForm = () => {
     form.gioiTinh = user.value.gioiTinh
     form.anhDaiDien = user.value.anhDaiDien || ''
     form.matKhau = user.value.matKhau || ''
+    anhTamThoi.value = ''
   }
 }
 
-// ===== THÊM HÀM NÀY =====
 const chonAnh = async (e) => {
   const file = e.target.files[0]
   if (!file) return
+  anhTamThoi.value = URL.createObjectURL(file) // Hiện ảnh ngay khi chọn
   const url = await uploadAnh(file)
   form.anhDaiDien = url
+  anhTamThoi.value = '' // Khi đã upload xong, reset, anhHienThi sẽ lấy form.anhDaiDien
 }
 
 onMounted(() => {
   fillForm()
 })
 </script>
-
