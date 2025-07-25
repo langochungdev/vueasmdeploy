@@ -1,17 +1,17 @@
 import axios from "axios";
 
-// Lấy baseURL từ biến môi trường (production) hoặc mặc định localhost (dev)
-const BASE_API = process.env.VUE_APP_API_URL || "http://localhost:8080";
+// Luôn lấy baseURL từ biến môi trường khi build
+const BASE_API = `${process.env.VUE_APP_API_URL}/api`;
 
-const API = `${BASE_API}/api/baiviet`;
-const BINHLUAN_API = `${BASE_API}/api/binhluan`;
+const API = `${BASE_API}/baiviet`;
+const BINHLUAN_API = `${BASE_API}/binhluan`;
 
 // Upload ảnh lên Cloudinary qua API backend
 export const uploadAnh = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await axios.post(`${BASE_API}/api/upload`, formData, {
+  const res = await axios.post(`${BASE_API}/upload`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
