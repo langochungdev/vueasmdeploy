@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Luôn lấy baseURL từ biến môi trường khi build
-const BASE_API = `${process.env.VUE_APP_API_URL}/api`;
+const BASE_API = "https://vueapibasic-production.up.railway.app/api";
 
 const API = `${BASE_API}/baiviet`;
 const BINHLUAN_API = `${BASE_API}/binhluan`;

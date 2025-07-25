@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Đúng cú pháp: lấy trực tiếp biến môi trường khi build, không cần if
-const API = `${process.env.VUE_APP_API_URL}/api/nguoidung`;
+const API = "https://vueapibasic-production.up.railway.app/api/nguoidung";
 
 export const dangKyNguoiDung = async (nguoiDung) => {
   const res = await axios.post(API, nguoiDung);
